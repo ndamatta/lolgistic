@@ -1,4 +1,4 @@
-#summonerInfoSection {
+#summonerBasicInfoSection {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -8,4 +8,12 @@
     display: flex;
     flex-direction: row;
     margin: 0 5rem auto;
+}
+.rankSummary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+#soloQ, #flex {
+    display: grid;
+    grid-template-columns: 1fr 2fr 2fr;
 }
