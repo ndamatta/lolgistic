@@ -7,7 +7,7 @@ burgerIcon.addEventListener("click", () => {
 });
 
 // API KEY
-const apiKey = "RGAPI-0bd1745b-7014-4858-b178-cacb2b17ffc5";
+const API_KEY = "RGAPI-0bd1745b-7014-4858-b178-cacb2b17ffc5";
 
 function getSummonerName() {
   return document.querySelector("#searchBar").value;
@@ -18,17 +18,29 @@ function getRegion() {
 function searchSummoner() {
   data();
 }
+function renderBasicInfo(data){
+  console.log(data)
+  let html = `
+  <figure class="image is-128x128">
+    <img class="is-rounded" src="https://ddragon.leagueoflegends.com/cdn/14.7.1/img/profileicon/${data.profileIconId}.png" alt=""/>
+  </figure>
+  <h1 class="is-size-3">${data.name}</h1>
+  <h2 class="subtitle">Level ${data.summonerLevel}</h2>`
+  const summonerBasicInfoSection = document.querySelector('#summonerBasicInfoSection');
+  summonerBasicInfoSection.innerHTML = html;
+}
 
 async function data() {
   //Get basic summoner info
   const bySummonerName = "lol/summoner/v4/summoners/by-name";
-  let URL_basicInfo = `https://${getRegion()}/${bySummonerName}/${getSummonerName()}?api_key=${apiKey}`;
+  let URL_basicInfo = `https://${getRegion()}/${bySummonerName}/${getSummonerName()}?api_key=${API_KEY}`;
   const basicInfo = await fetch(URL_basicInfo);
   const basicInfoJSON = await basicInfo.json();
+  renderBasicInfo(basicInfoJSON)
 
   //Get ranked info
   const byEntries = "lol/league/v4/entries/by-summoner";
-  const URL_rankedInfo = `https://${getRegion()}/${byEntries}/${basicInfoJSON.id}?api_key=${apiKey}`;
+  const URL_rankedInfo = `https://${getRegion()}/${byEntries}/${basicInfoJSON.id}?api_key=${API_KEY}`;
   const rankedInfo = await fetch(URL_rankedInfo);
   const rankedInfoJSON = await rankedInfo.json();
   
