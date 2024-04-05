@@ -9,11 +9,11 @@
     flex-direction: row;
     margin: 0 5rem auto;
 }
-.rankSummary {
+#rankedInfo {
     display: grid;
     grid-template-columns: 1fr 1fr;
 }
-#soloQ, #flex {
+#soloQ, #flexQ {
     display: grid;
     grid-template-columns: 1fr 2fr 2fr;
 }
