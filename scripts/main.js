@@ -20,11 +20,19 @@ function searchSummoner() {
 }
 
 async function data() {
-  // Get the info
+  //Get basic summoner info
   const bySummonerName = "lol/summoner/v4/summoners/by-name";
-  let fullRequest = `https://${getRegion()}/${bySummonerName}/${getSummonerName()}?api_key=${apiKey}`;
-  const summonerData = await fetch(fullRequest);
-  const summonerDataJSON = await summonerData.json();
+  let URL_basicInfo = `https://${getRegion()}/${bySummonerName}/${getSummonerName()}?api_key=${apiKey}`;
+  const basicInfo = await fetch(URL_basicInfo);
+  const basicInfoJSON = await basicInfo.json();
+
+  //Get ranked info
+  const byEntries = "lol/league/v4/entries/by-summoner";
+  const URL_rankedInfo = `https://${getRegion()}/${byEntries}/${basicInfoJSON.id}?api_key=${apiKey}`;
+  const rankedInfo = await fetch(URL_rankedInfo);
+  const rankedInfoJSON = await rankedInfo.json();
+  
+  console.log(rankedInfoJSON)
 }
 
 
