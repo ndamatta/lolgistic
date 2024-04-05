@@ -1,0 +1,11 @@
+#summonerInfoSection {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+#searchBarSection {
+    display: flex;
+    flex-direction: row;
+    margin: 0 5rem auto;
+}
