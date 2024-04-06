@@ -5,15 +5,24 @@
     align-items: center;
 }
 #searchBarSection {
+    display: grid;
+    grid-template-columns: 5rem 1fr;
+    margin: auto 2rem;
+}
+.container p.control {
     display: flex;
-    flex-direction: row;
-    margin: 0 5rem auto;
+    justify-content: center;
+    align-items: center;
 }
 #rankedInfo {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    column-gap: 2rem;
 }
+div#soloQ.box {margin: 0;}
 #soloQ, #flexQ {
-    display: grid;
-    grid-template-columns: 1fr 2fr 2fr;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
