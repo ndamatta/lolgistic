@@ -1,0 +1,82 @@
+{
+    "BR": {
+      "short_name": "[BR]",
+      "url": "br1.api.riotgames.com",
+      "region": "AMERICAS"
+    },
+    "EUNE": {
+      "short_name": "[EUNE]",
+      "url": "eun1.api.riotgames.com",
+      "region": "EUROPE"
+    },
+    "EUWE": {
+      "short_name": "[EUWE]",
+      "url": "euw1.api.riotgames.com",
+      "region": "EUROPE"
+    },
+    "JP": {
+      "short_name": "[JP]",
+      "url": "jp1.api.riotgames.com",
+      "region": "ASIA"
+    },
+    "KR": {
+      "short_name": "[KR]",
+      "url": "kr.api.riotgames.com",
+      "region": "ASIA"
+    },
+    "LAN": {
+      "short_name": "[LAN]",
+      "url": "la1.api.riotgames.com",
+      "region": "AMERICASS"
+    },
+    "LAS": {
+      "short_name": "[LAS]",
+      "url": "la2.api.riotgames.com",
+      "region": "AMERICAS"
+    },
+    "NA": {
+      "short_name": "[NA]",
+      "url": "na1.api.riotgames.com",
+      "region": "AMERICAS"
+    },
+    "OC": {
+      "short_name": "[OC]",
+      "url": "oc1.api.riotgames.com",
+      "region": "OCEANIA"
+    },
+    "TR": {
+      "short_name": "[TR]",
+      "url": "tr1.api.riotgames.com",
+      "region": "EUROPE"
+    },
+    "RU": {
+      "short_name": "[RU]",
+      "url": "ru.api.riotgames.com",
+      "region": "EUROPE"
+    },
+    "PH": {
+      "short_name": "[PH]",
+      "url": "ph2.api.riotgames.com",
+      "region": "ASIA"
+    },
+    "SG": {
+      "short_name": "[SG]",
+      "url": "sg2.api.riotgames.com",
+      "region": "ASIA"
+    },
+    "TH": {
+      "short_name": "[TH]",
+      "url": "th2.api.riotgames.com",
+      "region": "ASIA"
+    },
+    "TW": {
+      "short_name": "[TW]",
+      "url": "tw2.api.riotgames.com",
+      "region": "ASIA"
+    },
+    "VN": {
+      "short_name": "[VN]",
+      "url": "vn2.api.riotgames.com",
+      "region": "ASIA"
+    }
+  }
