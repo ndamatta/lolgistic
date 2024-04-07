@@ -72,14 +72,14 @@ function getTierIcon(data, queue) {
   try {
     switch(queue) {
       case "soloQ":
-          const path0 = `/images/tier${data[0].tier.toUpperCase()}.webp`
+          const path0 = `./images/tier${data[0].tier.toUpperCase()}.webp`
           return path0;
       case "flexQ":
-          const path1 = `/images/tier${data[1].tier.toUpperCase()}.webp`
+          const path1 = `./images/tier${data[1].tier.toUpperCase()}.webp`
           return path1;
     }
   }
-  catch {return `/images/tierIRON.webp`}
+  catch {return `./images/tierIRON.webp`}
   }
 function getWinrate(data, queue) {
   try {
