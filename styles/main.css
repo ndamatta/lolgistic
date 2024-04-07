@@ -1,3 +1,7 @@
+#banner {
+    max-width: 100%;
+    margin: 0 auto;
+}
 #summonerBasicInfoSection {
     display: flex;
     flex-direction: column;
@@ -6,8 +10,9 @@
 }
 #searchBarSection {
     display: grid;
-    grid-template-columns: 5rem 1fr;
-    margin: auto 2rem;
+    grid-template-columns: 5.5rem 1fr;
+    max-width: 70%;
+    margin: 0 auto;
 }
 .container p.control {
     display: flex;
@@ -25,4 +30,32 @@ div#soloQ.box {margin: 0;}
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+#lastGame {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#lastGame >div.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 2fr;
+    margin-top: 3rem;
+}
+.column1, .column2, .column3, .column4 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.first3items, .last3items {
+    display: flex;
+    flex-direction: row;
+    margin: .6rem;
+}
+.first3items > figure, .last3items > figure {
+    margin: 0 .1rem;
+}
+
+@media screen and (min-width: 35rem) {
+    #banner {max-width: 65%;}
 }
