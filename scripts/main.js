@@ -27,13 +27,22 @@ function getRegion(option) {
               return `${data[server].region}.api.riotgames.com`;
             }
           }
-          // If no match found, return null or appropriate fallback value
           return null;
         })
   }
 }
 function searchSummoner() {
   data();
+}
+function renderErrorFetch() {
+  let html = `
+  <figure class="image is-128x128">
+    <img class="is-rounded" src="https://ddragon.leagueoflegends.com/cdn/14.7.1/img/profileicon/29.png" alt=""/>
+  </figure>
+  <h1 class="is-size-3">We couldn't find this summoner</h1>
+  <h2 class="subtitle">Try with another one</h2>`
+  const summonerBasicInfoElement = document.querySelector('#summonerBasicInfoSection');
+  summonerBasicInfoElement.innerHTML = html;
 }
 function renderBasicInfo(data){
   let html = `
@@ -124,7 +133,8 @@ function getFlexTierRank(data) {
   }
 }
 async function data() {
-  //Get basic summoner info
+  try {
+    //Get basic summoner info
   const bySummonerName = "lol/summoner/v4/summoners/by-name";
   const URL_basicInfo = `https://${getRegion("basic")}/${bySummonerName}/${getSummonerName()}?api_key=${API_KEY}`;
   const basicInfo = await fetch(URL_basicInfo);
@@ -145,6 +155,9 @@ async function data() {
   const matchesID = await fetch(URL_matchesID);
   const matchesIDJSON = await matchesID.json();
   console.log(matchesIDJSON);
+
+  }
+  catch {renderErrorFetch()}
 }
 
 // Choose region
