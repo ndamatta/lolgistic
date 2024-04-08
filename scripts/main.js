@@ -167,7 +167,7 @@ function renderMatchInfo(summonerInMatchInfo) {
       </div>
       <div class="column3">
         <p id="gameKDA">${renderKDA(summonerInMatchInfo)}</p>
-        <p id="gameLevel">${getLvl(summonerInMatchInfo)}</p>
+        <p id="gameLevel">${renderLevel(summonerInMatchInfo)}</p>
       </div>
       <div class="column4">
         <div class="first3items">
@@ -216,8 +216,8 @@ function renderKDA(summonerInMatchInfo) {
   let kda = `${summonerInMatchInfo.kills}/${summonerInMatchInfo.deaths}/${summonerInMatchInfo.assists}`
   return kda
 }
-function getLvl(participantInfo) {
-  return `Lvl: ${participantInfo.champLevel}`
+function renderLevel(summonerInMatchInfo) {
+  return `Lvl: ${summonerInMatchInfo.champLevel}`
 }
 function getItem(participantInfo, itemNumber) {
 
