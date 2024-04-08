@@ -158,7 +158,7 @@ function renderMatchInfo(summonerInMatchInfo) {
     <div class="container">
       <div class="column1">
         <p id="gameWin">${renderIfWin(summonerInMatchInfo)}</p>
-        <p id="gameDuration">${getMatchDuration(summonerInMatchInfo.timePlayed)} min</p>
+        <p id="gameDuration">${renderMatchDuration(summonerInMatchInfo)} min</p>
         </div>
       <div class="column2">
         <figure id="gameChampionImage">
@@ -207,8 +207,9 @@ function renderIfWin(summonerInMatchInfo) {
       return "Defeat"
   }
 }
-function getMatchDuration(durationProperty) {
-  let inMinutes = durationProperty / 60
+function renderMatchDuration(summonerInMatchInfo) {
+  let matchDuration = summonerInMatchInfo.timePlayed
+  let inMinutes = matchDuration / 60
   return inMinutes.toFixed(2)
 }
 function getKDA(participantInfo) {
