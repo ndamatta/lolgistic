@@ -15,7 +15,7 @@ function getSummonerName() {
   return document.querySelector("#searchBar").value;
 }
 function getRegion(option) {
-  // Will use same function for both, to get ranked info and matches info. For matches it groups the options
+  // Will use same function for both, to get rank info and matches info. For matches it groups the options
   let regionSelectElement = document.querySelector("#searchBarSection select").value;
   switch(option) {
     case "basic":
@@ -143,51 +143,53 @@ function getFlexTierRank(data) {
     return "No ranked info available"
   }
 }
-function renderMatchInfo(data, puuid) {
+function getSummonerInMatchInfo(summonerMatchInfo, summonerPUUID) {
   let participantInfo = []
-  for (index in data.info.participants) {
-    if (data.info.participants[index].puuid == puuid) {
-      participantInfo = data.info.participants[index]
+  for (index in summonerMatchInfo.info.participants) {
+    if (summonerMatchInfo.info.participants[index].puuid == summonerPUUID) {
+      participantInfo = summonerMatchInfo.info.participants[index]
     }
   }
-  console.log(participantInfo)
+  return participantInfo;
+}
+function renderMatchInfo(summonerInMatchInfo) {
   let html = `
     <p>last match</p>
     <div class="container">
       <div class="column1">
-        <p id="gameWin">${getIfWin(participantInfo.win)}</p>
-        <p id="gameDuration">${getMatchDuration(participantInfo.timePlayed)} min</p>
+        <p id="gameWin">${renderIfWin(summonerInMatchInfo)}</p>
+        <p id="gameDuration">${getMatchDuration(summonerInMatchInfo.timePlayed)} min</p>
         </div>
       <div class="column2">
         <figure id="gameChampionImage">
-          <img class="image is-64x64" src="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${participantInfo.championName}_0.jpg"/>
+          <img class="image is-64x64" src="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${summonerInMatchInfo.championName}_0.jpg"/>
         </figure>
       </div>
       <div class="column3">
-        <p id="gameKDA">${getKDA(participantInfo)}</p>
-        <p id="gameLevel">${getLvl(participantInfo)}</p>
+        <p id="gameKDA">${getKDA(summonerInMatchInfo)}</p>
+        <p id="gameLevel">${getLvl(summonerInMatchInfo)}</p>
       </div>
       <div class="column4">
         <div class="first3items">
           <figure class="image is-32x32" id="gameChampionImage">
-            <img class="is-rounded" src="${getItem(participantInfo, 0)}"/>
+            <img class="is-rounded" src="${getItem(summonerInMatchInfo, 0)}"/>
           </figure>
           <figure class="image is-32x32" id="gameChampionImage">
-            <img class="is-rounded" src="${getItem(participantInfo, 1)}"/>
+            <img class="is-rounded" src="${getItem(summonerInMatchInfo, 1)}"/>
           </figure>
           <figure class="image is-32x32" id="gameChampionImage">
-            <img class="is-rounded" src="${getItem(participantInfo, 2)}"/>
+            <img class="is-rounded" src="${getItem(summonerInMatchInfo, 2)}"/>
           </figure>
         </div>
         <div class="last3items">
           <figure class="image is-32x32" id="gameChampionImage">
-            <img class="is-rounded" src="${getItem(participantInfo, 3)}"/>
+            <img class="is-rounded" src="${getItem(summonerInMatchInfo, 3)}"/>
           </figure>
           <figure class="image is-32x32" id="gameChampionImage">
-            <img class="is-rounded" src="${getItem(participantInfo, 4)}"/>
+            <img class="is-rounded" src="${getItem(summonerInMatchInfo, 4)}"/>
           </figure>
           <figure class="image is-32x32" id="gameChampionImage">
-            <img class="is-rounded" src="${getItem(participantInfo, 5)}"/>
+            <img class="is-rounded" src="${getItem(summonerInMatchInfo, 5)}"/>
           </figure>
         </div>
       </div>
@@ -196,8 +198,9 @@ function renderMatchInfo(data, puuid) {
   const lastGameContainer = document.querySelector("#lastGame")
   lastGameContainer.innerHTML = html
 }
-function getIfWin(winProperty) {
-  switch (winProperty){
+function renderIfWin(summonerInMatchInfo) {
+  let boolIfWin = summonerInMatchInfo.win
+  switch (boolIfWin){
     case true:
       return "Victory"
     case false:
@@ -233,36 +236,51 @@ function getItem(participantInfo, itemNumber) {
   }
 }
 async function data() {
-  try {
     //Get basic summoner info
+    const basicSummonerInfo = await fetchBasicSummonerInfo();
+    renderBasicInfo(basicSummonerInfo);
+
+    const summonerRankInfo = await fetchSummonerRankInfo(basicSummonerInfo.id);
+    renderRankedInfo(summonerRankInfo, "show");
+
+    const summonerMatchesID = await fetchSummonerMatchesID(basicSummonerInfo.puuid)
+
+    const summonerMatchInfo = await fetchSummonerMatchInfo(summonerMatchesID[0])
+    const summonerInMatchInfo = getSummonerInMatchInfo(summonerMatchInfo, basicSummonerInfo.puuid)
+    renderMatchInfo(summonerInMatchInfo)
+}
+
+async function fetchBasicSummonerInfo() {
   const bySummonerName = "lol/summoner/v4/summoners/by-name";
   const URL_basicInfo = `https://${getRegion("basic")}/${bySummonerName}/${getSummonerName()}?api_key=${API_KEY}`;
-  const basicInfo = await fetch(URL_basicInfo);
-  const basicInfoJSON = await basicInfo.json();
-  renderBasicInfo(basicInfoJSON);
-
-  //Get ranked info
+  const BasicSummonerInfo = await fetch(URL_basicInfo);
+  const basicInfoBasicSummonerInfoJSON = await BasicSummonerInfo.json();
+  console.log(basicInfoBasicSummonerInfoJSON.profileIconId)
+  return basicInfoBasicSummonerInfoJSON;
+}
+async function fetchSummonerRankInfo(summonerID) {
   const byEntries = "lol/league/v4/entries/by-summoner";
-  const URL_rankedInfo = `https://${getRegion("basic")}/${byEntries}/${basicInfoJSON.id}?api_key=${API_KEY}`;
-  const rankedInfo = await fetch(URL_rankedInfo);
-  const rankedInfoJSON = await rankedInfo.json();
-  renderRankedInfo(rankedInfoJSON, "show");
-
-  //Get matches IDs
+  const URL_summonerRankInfo = `https://${getRegion("basic")}/${byEntries}/${summonerID}?api_key=${API_KEY}`;
+  console.log(URL_summonerRankInfo)
+  const summonerRankInfo = await fetch(URL_summonerRankInfo);
+  const summonerRankInfoJSON = await summonerRankInfo.json();
+  return summonerRankInfoJSON;
+}
+async function fetchSummonerMatchesID(summonerPUUID) {
   const byPuuID = "lol/match/v5/matches/by-puuid"
   const region = await getRegion("match");
-  const URL_matchesID = `https://${region}/${byPuuID}/${basicInfoJSON.puuid}/ids?start=0&count=20&api_key=${API_KEY}`;
-  const matchesID = await fetch(URL_matchesID);
-  const matchesIDJSON = await matchesID.json();
-
-  //Get match info
+  const URL_summonerMatchesID = `https://${region}/${byPuuID}/${summonerPUUID}/ids?start=0&count3&api_key=${API_KEY}`;
+  const summonerMatchesID = await fetch(URL_summonerMatchesID);
+  const summonerMatchesIDJSON = await summonerMatchesID.json();
+  return summonerMatchesIDJSON;
+}
+async function fetchSummonerMatchInfo(summonerMatchesID) {
   const byMatch = "lol/match/v5/matches"
-  const URL_matchInfo = `https://${region}/${byMatch}/${matchesIDJSON[0]}?api_key=${API_KEY}`
-  const matchInfo = await fetch(URL_matchInfo);
-  const matchInfoJSON = await matchInfo.json();
-  renderMatchInfo(matchInfoJSON, basicInfoJSON.puuid)
-  }
-  catch {renderErrorFetch()}
+  const region = await getRegion("match");
+  const URL_summonerMatchInfo = `https://${region}/${byMatch}/${summonerMatchesID}?api_key=${API_KEY}`
+  const summonerMatchInfo = await fetch(URL_summonerMatchInfo);
+  const summonerMatchInfoJSON = await summonerMatchInfo.json();
+  return summonerMatchInfoJSON;
 }
 
 // Choose region
