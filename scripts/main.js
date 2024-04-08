@@ -63,7 +63,6 @@ function renderRankedInfo(data, fetcherror){
   const summonerRankedInfoElement = document.querySelector('#rankedInfo')
   switch (fetcherror){ 
     case "show":
-      console.log("it went to show")
       let html = `
       <div class="box" id="soloQ">
       <figure class="image is-64x64">
@@ -85,7 +84,8 @@ function renderRankedInfo(data, fetcherror){
      summonerRankedInfoElement.innerHTML = html;
      break;
     case "hide":
-      summonerRankedInfoElement.innerHTML = ""
+      summonerRankedInfoElement.innerHTML = "";
+      break;
   }
 }
 function getTierIcon(data, queue) {
@@ -152,33 +152,41 @@ function getSummonerInMatchInfo(summonerMatchInfo, summonerPUUID) {
   }
   return participantInfo;
 }
-function renderMatchInfo(summonerInMatchInfo) {
-  let html = `
-    <p>last match</p>
-    <div class="container">
-      <div class="column1">
-        <p id="gameWin">${renderIfWin(summonerInMatchInfo)}</p>
-        <p id="gameDuration">${renderMatchDuration(summonerInMatchInfo)} min</p>
-        </div>
-      <div class="column2">
-        <figure id="gameChampionImage">
-          <img class="image is-64x64" src="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${summonerInMatchInfo.championName}_0.jpg"/>
-        </figure>
-      </div>
-      <div class="column3">
-        <p id="gameKDA">${renderKDA(summonerInMatchInfo)}</p>
-        <p id="gameLevel">${renderLevel(summonerInMatchInfo)}</p>
-      </div>
-      <div class="column4">
-        <div class="first3items">
-        </div>
-        <div class="last3items">
-        </div>
-      </div>
-    </div>
-  `
+function renderMatchInfo(summonerInMatchInfo, fetchError) {
   const lastGameContainer = document.querySelector("#lastGame")
-  lastGameContainer.innerHTML = html
+  switch (fetchError) {
+    case "show":
+      let html = `
+      <p>last match</p>
+      <div class="container">
+        <div class="column1">
+          <p id="gameWin">${renderIfWin(summonerInMatchInfo)}</p>
+          <p id="gameDuration">${renderMatchDuration(summonerInMatchInfo)} min</p>
+          </div>
+        <div class="column2">
+          <figure id="gameChampionImage">
+            <img class="image is-64x64" src="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${summonerInMatchInfo.championName}_0.jpg"/>
+          </figure>
+        </div>
+        <div class="column3">
+          <p id="gameKDA">${renderKDA(summonerInMatchInfo)}</p>
+          <p id="gameLevel">${renderLevel(summonerInMatchInfo)}</p>
+        </div>
+        <div class="column4">
+          <div class="first3items">
+          </div>
+          <div class="last3items">
+          </div>
+        </div>
+      </div>
+      `
+      lastGameContainer.innerHTML = html;
+      break;
+    case "hide":
+      lastGameContainer.innerHTML = "";
+      break;
+  }
+
 }
 function renderIfWin(summonerInMatchInfo) {
   let boolIfWin = summonerInMatchInfo.win
@@ -201,59 +209,74 @@ function renderKDA(summonerInMatchInfo) {
 function renderLevel(summonerInMatchInfo) {
   return `Lvl: ${summonerInMatchInfo.champLevel}`
 }
-function renderItem(summonerItemID, position) {
+function renderItem(summonerItemID, position, fetchError) {
   const first3ItemsElement = document.querySelector(".first3items")
   const last3ItemsElement = document.querySelector(".last3items")
-  const figureElement = document.createElement("figure");
-  figureElement.setAttribute("class", "image is-32x32");
-  const imgElement = document.createElement("img");
-  imgElement.setAttribute("src", `https://ddragon.leagueoflegends.com/cdn/14.7.1/img/item/${summonerItemID}.png`)  
-  figureElement.appendChild(imgElement);
-  switch(position) {
-    case "first":
-      first3ItemsElement.appendChild(figureElement);
-      break
-    case "last":
-      last3ItemsElement.appendChild(figureElement);
+  switch (fetchError) {
+    case "show":
+      const figureElement = document.createElement("figure");
+      figureElement.setAttribute("class", "image is-32x32");
+      const imgElement = document.createElement("img");
+      imgElement.setAttribute("src", `https://ddragon.leagueoflegends.com/cdn/14.7.1/img/item/${summonerItemID}.png`)  
+      figureElement.appendChild(imgElement);
+      switch(position) {
+        case "first":
+          first3ItemsElement.appendChild(figureElement);
+          break
+        case "last":
+          last3ItemsElement.appendChild(figureElement);
+          break;
+      }
+      break;
+    case "hide":
       break;
   }
+
 }
 async function data() {
-    //Get basic summoner info
-    const basicSummonerInfo = await fetchBasicSummonerInfo();
-    renderBasicInfo(basicSummonerInfo);
-
-    const summonerRankInfo = await fetchSummonerRankInfo(basicSummonerInfo.id);
-    renderRankedInfo(summonerRankInfo, "show");
-
-    const summonerMatchesID = await fetchSummonerMatchesID(basicSummonerInfo.puuid)
-
-    const summonerMatchInfo = await fetchSummonerMatchInfo(summonerMatchesID[0])
-    const summonerInMatchInfo = getSummonerInMatchInfo(summonerMatchInfo, basicSummonerInfo.puuid)
-    renderMatchInfo(summonerInMatchInfo)
-    renderItem(summonerInMatchInfo.item0, "first")
-    renderItem(summonerInMatchInfo.item1, "first")
-    renderItem(summonerInMatchInfo.item2, "first")
-    renderItem(summonerInMatchInfo.item3, "last")
-    renderItem(summonerInMatchInfo.item4, "last")
-    renderItem(summonerInMatchInfo.item5, "last")
+    try {
+      const basicSummonerInfo = await fetchBasicSummonerInfo();
+      renderBasicInfo(basicSummonerInfo);
+      const summonerRankInfo = await fetchSummonerRankInfo(basicSummonerInfo.id);
+      renderRankedInfo(summonerRankInfo, "show");
+  
+      const summonerMatchesID = await fetchSummonerMatchesID(basicSummonerInfo.puuid);
+  
+      const summonerMatchInfo = await fetchSummonerMatchInfo(summonerMatchesID[0]);
+      const summonerInMatchInfo = getSummonerInMatchInfo(summonerMatchInfo, basicSummonerInfo.puuid);
+      renderMatchInfo(summonerInMatchInfo, "show");
+      renderItem(summonerInMatchInfo.item0, "first", "show");
+      renderItem(summonerInMatchInfo.item1, "first", "show");
+      renderItem(summonerInMatchInfo.item2, "first", "show");
+      renderItem(summonerInMatchInfo.item3, "last", "show");
+      renderItem(summonerInMatchInfo.item4, "last", "show");
+      renderItem(summonerInMatchInfo.item5, "last", "show");
+    }
+    catch {
+      renderErrorFetch()
+      renderRankedInfo("", "hide")
+      renderMatchInfo("", "hide")
+      renderItem("","","hide")
+    };
 }
 
 async function fetchBasicSummonerInfo() {
-  const bySummonerName = "lol/summoner/v4/summoners/by-name";
-  const URL_basicInfo = `https://${getRegion("basic")}/${bySummonerName}/${getSummonerName()}?api_key=${API_KEY}`;
-  const BasicSummonerInfo = await fetch(URL_basicInfo);
-  const basicInfoBasicSummonerInfoJSON = await BasicSummonerInfo.json();
-  console.log(basicInfoBasicSummonerInfoJSON.profileIconId)
-  return basicInfoBasicSummonerInfoJSON;
+    const bySummonerName = "lol/summoner/v4/summoners/by-name";
+    const URL_basicInfo = `https://${getRegion("basic")}/${bySummonerName}/${getSummonerName()}?api_key=${API_KEY}`;
+    const BasicSummonerInfo = await fetch(URL_basicInfo);
+    const basicInfoBasicSummonerInfoJSON = await BasicSummonerInfo.json();
+    return basicInfoBasicSummonerInfoJSON;
 }
 async function fetchSummonerRankInfo(summonerID) {
-  const byEntries = "lol/league/v4/entries/by-summoner";
-  const URL_summonerRankInfo = `https://${getRegion("basic")}/${byEntries}/${summonerID}?api_key=${API_KEY}`;
-  console.log(URL_summonerRankInfo)
-  const summonerRankInfo = await fetch(URL_summonerRankInfo);
-  const summonerRankInfoJSON = await summonerRankInfo.json();
-  return summonerRankInfoJSON;
+  try {
+    const byEntries = "lol/league/v4/entries/by-summoner";
+    const URL_summonerRankInfo = `https://${getRegion("basic")}/${byEntries}/${summonerID}?api_key=${API_KEY}`;
+    const summonerRankInfo = await fetch(URL_summonerRankInfo);
+    const summonerRankInfoJSON = await summonerRankInfo.json();
+    return summonerRankInfoJSON;
+  }
+  catch {renderRankedInfo("", "hide")}
+
 }
 async function fetchSummonerMatchesID(summonerPUUID) {
   const byPuuID = "lol/match/v5/matches/by-puuid"
