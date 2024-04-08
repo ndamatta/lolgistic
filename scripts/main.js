@@ -9,7 +9,7 @@ burgerIcon.addEventListener("click", () => {
 document.querySelector("#searchBarSection input").focus()
 
 // API KEY
-const API_KEY = "RGAPI-50313a07-2817-4f5c-b598-a30376dd5cda";
+const API_KEY = "RGAPI-5d0693ec-5502-4005-896f-b183d618115d";
 
 function getSummonerName() {
   return document.querySelector("#searchBar").value;
@@ -36,82 +36,111 @@ function getRegion(option) {
 function searchSummoner() {
   data();
 }
-function renderErrorFetch() {
+function renderBasicInfoError() {
+  let summonerBasicInfoElement = document.querySelector('#summonerBasicInfoSection');
   let html = `
   <figure class="image is-128x128">
     <img class="is-rounded" src="https://ddragon.leagueoflegends.com/cdn/14.7.1/img/profileicon/29.png" alt=""/>
   </figure>
   <p class="is-size-5">We couldn't find this summoner<p>
   <p class="is-size-6">Try with another one</p>`
-  const summonerBasicInfoElement = document.querySelector('#summonerBasicInfoSection');
   summonerBasicInfoElement.innerHTML = html;
   summonerBasicInfoElement.scrollIntoView({ behavior: "smooth", block: "start"})
-  renderRankedInfo("","hide")
 }
+
 function renderBasicInfo(data){
+  let summonerBasicInfoElement = document.querySelector('#summonerBasicInfoSection');
   let html = `
   <figure class="image is-128x128">
     <img class="is-rounded" src="https://ddragon.leagueoflegends.com/cdn/14.7.1/img/profileicon/${data.profileIconId}.png" alt=""/>
   </figure>
   <h1 class="is-size-3">${data.name}</h1>
   <h2 class="subtitle">Level ${data.summonerLevel}</h2>`
-  const summonerBasicInfoElement = document.querySelector('#summonerBasicInfoSection');
   summonerBasicInfoElement.innerHTML = html;
-  summonerBasicInfoElement.scrollIntoView({ behavior: "smooth", block: "start"})
+  summonerBasicInfoElement.scrollIntoView({ behavior: "smooth", block: "start"});
 }
-function renderRankedInfo(data, fetcherror){
-  const summonerRankedInfoElement = document.querySelector('#rankedInfo')
-  switch (fetcherror){ 
-    case "show":
+function renderRankInfoError(queue, toHide) {
+  const boxElement = document.querySelector(`#${queue}`)
+  switch(toHide){
+    case true:
+      const soloQBox = document.querySelector("#soloQ");
+      const flexQBox = document.querySelector("#flexQ");
+      soloQBox.innerHTML = "";
+      flexQBox.innerHTML = "";
+      soloQBox.removeAttribute("class");
+      flexQBox.removeAttribute("class");
+      break; 
+    case false:
+      console.log(queue)
+      boxElement.setAttribute("class", "box");
       let html = `
-      <div class="box" id="soloQ">
       <figure class="image is-64x64">
-        <img class="is-rounded" src="${getTierIcon(data, "soloQ")}" alt="Emblem tier icon" />
+        <img class="is-rounded" src="${getTierIcon("", "unranked")}" alt="Emblem tier icon" />
       </figure>
-      <p id="soloQ_rank">${getSoloQTierRank(data)}</p>
-      <p id="soloQ_winrate">${getWinrate(data, "soloQ")}</p>
-      <p id="soloQ_winratep">${getWinrateP(data, "soloQ")}</p>
-     </div>
-     
-     <div class="box" id="flexQ">
-     <figure class="image is-64x64">
-      <img class="is-rounded" src="${getTierIcon(data, "flexQ")}" alt="Emblem tier icon" />
-     </figure>
-     <p id="flexQ_rank">${getFlexTierRank(data, "flexQ")}</p>
-     <p id="flexQ_winrate">${getWinrate(data, "flexQ")}</p>
-     <p id="flexQ_winratep">${getWinrateP(data, "flexQ")}</p>
-     </div>`
-     summonerRankedInfoElement.innerHTML = html;
-     break;
-    case "hide":
-      summonerRankedInfoElement.innerHTML = "";
+      <p id="soloQ_rank">No rank info available</p>`
+      boxElement.innerHTML = html;
       break;
   }
+
+}
+
+function renderRankSoloQInfo (summonerRankInfo) {
+  if (summonerRankInfo.length == 0) {
+    renderRankInfoError("soloQ", false)
+  }
+  else {
+    console.log(summonerRankInfo)
+    const soloQboxElement = document.querySelector("#soloQ");
+    soloQboxElement.setAttribute("class", "box");
+    let html = `
+    <figure class="image is-64x64">
+      <img class="is-rounded" src="${getTierIcon(summonerRankInfo, "soloQ")}" alt="Emblem tier icon" />
+    </figure>
+    <p id="soloQ_rank">${getSoloQTierRank(summonerRankInfo)}</p>
+    <p id="soloQ_winrate">${getWinrate(summonerRankInfo, "soloQ")}</p>
+    <p id="soloQ_winratep">${getWinrateP(summonerRankInfo, "soloQ")}</p>`
+    soloQboxElement.innerHTML = html;
+  }
+
+}
+
+function renderRankFlexQInfo (summonerRankInfo) {
+  if (summonerRankInfo.length == 0) {
+    renderRankInfoError("flexQ", false)
+  }
+  else {
+    const flexQboxElement = document.querySelector("#flexQ");
+    flexQboxElement.setAttribute("class", "box");
+    let html = `
+    <figure class="image is-64x64">
+    <img class="is-rounded" src="${getTierIcon(summonerRankInfo, "flexQ")}" alt="Emblem tier icon" />
+    </figure>
+    <p id="flexQ_rank">${getFlexTierRank(summonerRankInfo, "flexQ")}</p>
+    <p id="flexQ_winrate">${getWinrate(summonerRankInfo, "flexQ")}</p>
+    <p id="flexQ_winratep">${getWinrateP(summonerRankInfo, "flexQ")}</p>`
+    flexQboxElement.innerHTML = html;
+  }
+
 }
 function getTierIcon(data, queue) {
-  try {
-    switch(queue) {
-      case "soloQ":
-          const path0 = `./images/tier${data[0].tier.toUpperCase()}.webp`
-          return path0;
-      case "flexQ":
-          const path1 = `./images/tier${data[1].tier.toUpperCase()}.webp`
-          return path1;
-    }
+  switch(queue) {
+    case "soloQ":
+      const path0 = `./images/tier${data[0].tier.toUpperCase()}.webp`
+      return path0;
+    case "flexQ":
+      const path1 = `./images/tier${data[1].tier.toUpperCase()}.webp`
+      return path1;
+    case "unranked":
+      return `./images/tierIRON.webp`
   }
-  catch {return `./images/tierIRON.webp`}
   }
 function getWinrate(data, queue) {
-  try {
-    switch(queue) {
-      case "soloQ":
-        return `${data[0].wins}W | ${data[0].losses}L`
-      case "flexQ":
-        return `${data[1].wins}W | ${data[1].losses}L`
-    }
-    
+  switch(queue) {
+    case "soloQ":
+      return `${data[0].wins}W | ${data[0].losses}L`
+    case "flexQ":
+      return `${data[1].wins}W | ${data[1].losses}L`
   }
-  catch {return ""}
 }
 function getWinrateP(data, queue) {
   try {
@@ -139,9 +168,7 @@ function getFlexTierRank(data) {
   try {
     return `${data[1].tier} ${data[1].rank}`
   }  
-  catch {
-    return "No ranked info available"
-  }
+  catch {return "No ranked info available"}
 }
 function getSummonerInMatchInfo(summonerMatchInfo, summonerPUUID) {
   let participantInfo = []
@@ -217,7 +244,13 @@ function renderItem(summonerItemID, position, fetchError) {
       const figureElement = document.createElement("figure");
       figureElement.setAttribute("class", "image is-32x32");
       const imgElement = document.createElement("img");
-      imgElement.setAttribute("src", `https://ddragon.leagueoflegends.com/cdn/14.7.1/img/item/${summonerItemID}.png`)  
+      if (summonerItemID == 0) {
+        imgElement.setAttribute("src", `https://placehold.co/64x64?text=X`)  
+      }
+      else {
+        imgElement.setAttribute("src", `https://ddragon.leagueoflegends.com/cdn/14.7.1/img/item/${summonerItemID}.png`)  
+
+      }
       figureElement.appendChild(imgElement);
       switch(position) {
         case "first":
@@ -237,11 +270,25 @@ async function data() {
     try {
       const basicSummonerInfo = await fetchBasicSummonerInfo();
       renderBasicInfo(basicSummonerInfo);
-      const summonerRankInfo = await fetchSummonerRankInfo(basicSummonerInfo.id);
-      renderRankedInfo(summonerRankInfo, "show");
-  
+      try {
+        const summonerRankInfo = await fetchSummonerRankInfo(basicSummonerInfo.id);
+        try {renderRankSoloQInfo(summonerRankInfo);}
+        catch (error) {`Error fetching SoloQ rank info: ${error}`}
+
+        try {renderRankFlexQInfo(summonerRankInfo);}
+        catch (error) {`Error fetching FlexQ rank info: ${error}`}
+      }
+      catch (error) {`Error fetching rank info: ${error}`}
+    }
+    catch {
+      renderBasicInfoError();
+      renderRankInfoError("soloQ", true);
+      renderRankInfoError("flexQ", true);
+    };
+    
+/*     try {
+      const basicSummonerInfo = await fetchBasicSummonerInfo();
       const summonerMatchesID = await fetchSummonerMatchesID(basicSummonerInfo.puuid);
-  
       const summonerMatchInfo = await fetchSummonerMatchInfo(summonerMatchesID[0]);
       const summonerInMatchInfo = getSummonerInMatchInfo(summonerMatchInfo, basicSummonerInfo.puuid);
       renderMatchInfo(summonerInMatchInfo, "show");
@@ -253,11 +300,9 @@ async function data() {
       renderItem(summonerInMatchInfo.item5, "last", "show");
     }
     catch {
-      renderErrorFetch()
-      renderRankedInfo("", "hide")
       renderMatchInfo("", "hide")
       renderItem("","","hide")
-    };
+    }; */
 }
 
 async function fetchBasicSummonerInfo() {
@@ -268,15 +313,11 @@ async function fetchBasicSummonerInfo() {
     return basicInfoBasicSummonerInfoJSON;
 }
 async function fetchSummonerRankInfo(summonerID) {
-  try {
-    const byEntries = "lol/league/v4/entries/by-summoner";
-    const URL_summonerRankInfo = `https://${getRegion("basic")}/${byEntries}/${summonerID}?api_key=${API_KEY}`;
-    const summonerRankInfo = await fetch(URL_summonerRankInfo);
-    const summonerRankInfoJSON = await summonerRankInfo.json();
-    return summonerRankInfoJSON;
-  }
-  catch {renderRankedInfo("", "hide")}
-
+  const byEntries = "lol/league/v4/entries/by-summoner";
+  const URL_summonerRankInfo = `https://${getRegion("basic")}/${byEntries}/${summonerID}?api_key=${API_KEY}`;
+  const summonerRankInfo = await fetch(URL_summonerRankInfo);
+  const summonerRankInfoJSON = await summonerRankInfo.json();
+  return summonerRankInfoJSON;
 }
 async function fetchSummonerMatchesID(summonerPUUID) {
   const byPuuID = "lol/match/v5/matches/by-puuid"
