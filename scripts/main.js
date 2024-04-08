@@ -166,7 +166,7 @@ function renderMatchInfo(summonerInMatchInfo) {
         </figure>
       </div>
       <div class="column3">
-        <p id="gameKDA">${getKDA(summonerInMatchInfo)}</p>
+        <p id="gameKDA">${renderKDA(summonerInMatchInfo)}</p>
         <p id="gameLevel">${getLvl(summonerInMatchInfo)}</p>
       </div>
       <div class="column4">
@@ -212,8 +212,8 @@ function renderMatchDuration(summonerInMatchInfo) {
   let inMinutes = matchDuration / 60
   return inMinutes.toFixed(2)
 }
-function getKDA(participantInfo) {
-  let kda = `${participantInfo.kills}/${participantInfo.deaths}/${participantInfo.assists}`
+function renderKDA(summonerInMatchInfo) {
+  let kda = `${summonerInMatchInfo.kills}/${summonerInMatchInfo.deaths}/${summonerInMatchInfo.assists}`
   return kda
 }
 function getLvl(participantInfo) {
