@@ -171,26 +171,8 @@ function renderMatchInfo(summonerInMatchInfo) {
       </div>
       <div class="column4">
         <div class="first3items">
-          <figure class="image is-32x32" id="gameChampionImage">
-            <img class="is-rounded" src="${getItem(summonerInMatchInfo, 0)}"/>
-          </figure>
-          <figure class="image is-32x32" id="gameChampionImage">
-            <img class="is-rounded" src="${getItem(summonerInMatchInfo, 1)}"/>
-          </figure>
-          <figure class="image is-32x32" id="gameChampionImage">
-            <img class="is-rounded" src="${getItem(summonerInMatchInfo, 2)}"/>
-          </figure>
         </div>
         <div class="last3items">
-          <figure class="image is-32x32" id="gameChampionImage">
-            <img class="is-rounded" src="${getItem(summonerInMatchInfo, 3)}"/>
-          </figure>
-          <figure class="image is-32x32" id="gameChampionImage">
-            <img class="is-rounded" src="${getItem(summonerInMatchInfo, 4)}"/>
-          </figure>
-          <figure class="image is-32x32" id="gameChampionImage">
-            <img class="is-rounded" src="${getItem(summonerInMatchInfo, 5)}"/>
-          </figure>
         </div>
       </div>
     </div>
@@ -219,21 +201,21 @@ function renderKDA(summonerInMatchInfo) {
 function renderLevel(summonerInMatchInfo) {
   return `Lvl: ${summonerInMatchInfo.champLevel}`
 }
-function getItem(participantInfo, itemNumber) {
-
-  switch (itemNumber) {
-    case 0:
-      return `https://ddragon.leagueoflegends.com/cdn/14.7.1/img/item/${participantInfo.item0}.png`
-    case 1:
-      return `https://ddragon.leagueoflegends.com/cdn/14.7.1/img/item/${participantInfo.item1}.png`
-    case 2:
-      return `https://ddragon.leagueoflegends.com/cdn/14.7.1/img/item/${participantInfo.item2}.png`
-    case 3:
-      return `https://ddragon.leagueoflegends.com/cdn/14.7.1/img/item/${participantInfo.item3}.png`
-    case 4:
-      return `https://ddragon.leagueoflegends.com/cdn/14.7.1/img/item/${participantInfo.item4}.png`
-    case 5:
-      return `https://ddragon.leagueoflegends.com/cdn/14.7.1/img/item/${participantInfo.item5}.png`
+function renderItem(summonerItemID, position) {
+  const first3ItemsElement = document.querySelector(".first3items")
+  const last3ItemsElement = document.querySelector(".last3items")
+  const figureElement = document.createElement("figure");
+  figureElement.setAttribute("class", "image is-32x32");
+  const imgElement = document.createElement("img");
+  imgElement.setAttribute("src", `https://ddragon.leagueoflegends.com/cdn/14.7.1/img/item/${summonerItemID}.png`)  
+  figureElement.appendChild(imgElement);
+  switch(position) {
+    case "first":
+      first3ItemsElement.appendChild(figureElement);
+      break
+    case "last":
+      last3ItemsElement.appendChild(figureElement);
+      break;
   }
 }
 async function data() {
@@ -249,6 +231,12 @@ async function data() {
     const summonerMatchInfo = await fetchSummonerMatchInfo(summonerMatchesID[0])
     const summonerInMatchInfo = getSummonerInMatchInfo(summonerMatchInfo, basicSummonerInfo.puuid)
     renderMatchInfo(summonerInMatchInfo)
+    renderItem(summonerInMatchInfo.item0, "first")
+    renderItem(summonerInMatchInfo.item1, "first")
+    renderItem(summonerInMatchInfo.item2, "first")
+    renderItem(summonerInMatchInfo.item3, "last")
+    renderItem(summonerInMatchInfo.item4, "last")
+    renderItem(summonerInMatchInfo.item5, "last")
 }
 
 async function fetchBasicSummonerInfo() {
