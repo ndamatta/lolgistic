@@ -6,7 +6,7 @@ burgerIcon.addEventListener("click", () => {
   navbarMenu.classList.toggle("is-active");
 });
 // FOCUS SEARCH BAR
-document.querySelector("#searchBarSection input").focus()
+document.querySelector("#searchBarSection input").focus();
 
 // API KEY
 const API_KEY = "RGAPI-5d0693ec-5502-4005-896f-b183d618115d";
@@ -32,9 +32,6 @@ function getRegion(option) {
           return null;
         })
   }
-}
-function searchSummoner() {
-  data();
 }
 function renderBasicInfoError() {
   let summonerBasicInfoElement = document.querySelector('#summonerBasicInfoSection');
@@ -307,7 +304,7 @@ function renderLoadingAnimation(option){
       loadingDiv.style.display = "none";
   }
 }
-async function data() {
+async function searchSummoner() {
     try {
       renderLoadingAnimation("show")
       const basicSummonerInfo = await fetchBasicSummonerInfo();
@@ -400,4 +397,14 @@ document.querySelector("#searchBarSection input").addEventListener("keypress", f
     event.preventDefault();
     document.querySelector("#searchBarBtn").click();
   }
+});
+
+//LOCAL STORAGE
+const searchBarInput = document.querySelector("#searchBarSection > input");
+const savedLastSearch = localStorage.getItem("lastSearch");
+if (savedLastSearch) {
+  searchBarInput.setAttribute("placeholder", savedLastSearch);
+}
+document.querySelector("#searchBarBtn").addEventListener("click", function() {
+  localStorage.setItem('lastSearch', searchBarInput.value);
 });
