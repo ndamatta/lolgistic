@@ -83,35 +83,53 @@ function renderRankInfoError(queue, toHide) {
   }
 
 }
-
-function renderRankSoloQInfo (summonerRankInfo) {
+function detectRankInfo(summonerRankInfo) {
+  console.log("summoner rank info inside detectRankInfo:", summonerRankInfo)
   if (summonerRankInfo.length == 0) {
     renderRankInfoError("soloQ", false)
+    renderRankInfoError("flexQ", false)
   }
-  else {
-    console.log(summonerRankInfo)
+  else if (summonerRankInfo[0].queueType == "RANKED_SOLO_5x5" && summonerRankInfo.length == 1) {
+    console.log("THIRD ELIF")
+    renderRankSoloQInfo(summonerRankInfo)
+    renderRankInfoError("flexQ", false)
+  }
+  else if (summonerRankInfo[0].queueType == "RANKED_FLEX_SR" && summonerRankInfo.length == 1) {
+    console.log("FOURTH ELIF")
+    renderRankInfoError("soloQ", false)
+    renderRankFlexQInfo(summonerRankInfo)
+  }
+  else if (summonerRankInfo[0].queueType == "RANKED_SOLO_5x5" && summonerRankInfo[1].queueType == "RANKED_FLEX_SR") {
+    console.log("FIRST ELIF")
+    renderRankSoloQInfo(summonerRankInfo)
+    renderRankFlexQInfo(summonerRankInfo)
+  }
+  else if (summonerRankInfo[0].queueType == "RANKED_FLEX_SR" && summonerRankInfo[1].queueType == "RANKED_SOLO_5x5") {
+    console.log("SECOND ELIF")
+    renderRankSoloQInfo(summonerRankInfo)
+    renderRankFlexQInfo(summonerRankInfo)
+  }
+}
+
+function renderRankSoloQInfo (summonerRankInfo) {
     const soloQboxElement = document.querySelector("#soloQ");
     soloQboxElement.setAttribute("class", "box");
     let html = `
+    <p>solo Q<p>
     <figure class="image is-64x64">
       <img class="is-rounded" src="${getTierIcon(summonerRankInfo, "soloQ")}" alt="Emblem tier icon" />
     </figure>
     <p id="soloQ_rank">${getSoloQTierRank(summonerRankInfo)}</p>
     <p id="soloQ_winrate">${getWinrate(summonerRankInfo, "soloQ")}</p>
     <p id="soloQ_winratep">${getWinrateP(summonerRankInfo, "soloQ")}</p>`
-    soloQboxElement.innerHTML = html;
-  }
-
+    soloQboxElement.innerHTML = html;  
 }
 
 function renderRankFlexQInfo (summonerRankInfo) {
-  if (summonerRankInfo.length == 0) {
-    renderRankInfoError("flexQ", false)
-  }
-  else {
     const flexQboxElement = document.querySelector("#flexQ");
     flexQboxElement.setAttribute("class", "box");
     let html = `
+    <p>flex Q<p>
     <figure class="image is-64x64">
     <img class="is-rounded" src="${getTierIcon(summonerRankInfo, "flexQ")}" alt="Emblem tier icon" />
     </figure>
@@ -119,9 +137,8 @@ function renderRankFlexQInfo (summonerRankInfo) {
     <p id="flexQ_winrate">${getWinrate(summonerRankInfo, "flexQ")}</p>
     <p id="flexQ_winratep">${getWinrateP(summonerRankInfo, "flexQ")}</p>`
     flexQboxElement.innerHTML = html;
-  }
-
 }
+
 function getTierIcon(data, queue) {
   switch(queue) {
     case "soloQ":
@@ -272,13 +289,10 @@ async function data() {
       renderBasicInfo(basicSummonerInfo);
       try {
         const summonerRankInfo = await fetchSummonerRankInfo(basicSummonerInfo.id);
-        try {renderRankSoloQInfo(summonerRankInfo);}
-        catch (error) {`Error fetching SoloQ rank info: ${error}`}
-
-        try {renderRankFlexQInfo(summonerRankInfo);}
-        catch (error) {`Error fetching FlexQ rank info: ${error}`}
+        console.log("summoner rank info outside detectRankInfo:", summonerRankInfo)
+        detectRankInfo(summonerRankInfo);
       }
-      catch (error) {`Error fetching rank info: ${error}`}
+      catch (error) {console.error(`Error fetching rank info: ${error}`)}
     }
     catch {
       renderBasicInfoError();
@@ -286,7 +300,7 @@ async function data() {
       renderRankInfoError("flexQ", true);
     };
     
-/*     try {
+    try {
       const basicSummonerInfo = await fetchBasicSummonerInfo();
       const summonerMatchesID = await fetchSummonerMatchesID(basicSummonerInfo.puuid);
       const summonerMatchInfo = await fetchSummonerMatchInfo(summonerMatchesID[0]);
@@ -302,7 +316,7 @@ async function data() {
     catch {
       renderMatchInfo("", "hide")
       renderItem("","","hide")
-    }; */
+    };
 }
 
 async function fetchBasicSummonerInfo() {
