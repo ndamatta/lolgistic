@@ -71,7 +71,6 @@ function renderRankInfoError(queue, toHide) {
       flexQBox.removeAttribute("class");
       break; 
     case false:
-      console.log(queue)
       boxElement.setAttribute("class", "box");
       let html = `
       <figure class="image is-64x64">
@@ -84,28 +83,23 @@ function renderRankInfoError(queue, toHide) {
 
 }
 function detectRankInfo(summonerRankInfo) {
-  console.log("summoner rank info inside detectRankInfo:", summonerRankInfo)
   if (summonerRankInfo.length == 0) {
     renderRankInfoError("soloQ", false)
     renderRankInfoError("flexQ", false)
   }
   else if (summonerRankInfo[0].queueType == "RANKED_SOLO_5x5" && summonerRankInfo.length == 1) {
-    console.log("THIRD ELIF")
     renderRankSoloQInfo(summonerRankInfo)
     renderRankInfoError("flexQ", false)
   }
   else if (summonerRankInfo[0].queueType == "RANKED_FLEX_SR" && summonerRankInfo.length == 1) {
-    console.log("FOURTH ELIF")
     renderRankInfoError("soloQ", false)
     renderRankFlexQInfo(summonerRankInfo)
   }
   else if (summonerRankInfo[0].queueType == "RANKED_SOLO_5x5" && summonerRankInfo[1].queueType == "RANKED_FLEX_SR") {
-    console.log("FIRST ELIF")
     renderRankSoloQInfo(summonerRankInfo)
     renderRankFlexQInfo(summonerRankInfo)
   }
   else if (summonerRankInfo[0].queueType == "RANKED_FLEX_SR" && summonerRankInfo[1].queueType == "RANKED_SOLO_5x5") {
-    console.log("SECOND ELIF")
     renderRankSoloQInfo(summonerRankInfo)
     renderRankFlexQInfo(summonerRankInfo)
   }
@@ -218,8 +212,8 @@ function renderMatchInfo(summonerMatchInfo, summonerInMatchInfo, fetchError) {
       <div class="container">
         <div class="column1">
           <p id="gameWin">${renderIfWin(summonerInMatchInfo)}</p>
-          <p>${renderMatchDate(summonerMatchInfo)}</p>
-          <p id="gameDuration">${renderMatchDuration(summonerInMatchInfo)} min</p>
+          <p class="is-size-7" id="gameDate">${renderMatchDate(summonerMatchInfo)}</p>
+          <p class="is-size-7" id="gameDuration">${renderMatchDuration(summonerInMatchInfo)}m</p>
           </div>
         <div class="column2">
           <figure id="gameChampionImage">
@@ -301,20 +295,32 @@ function renderItem(summonerItemID, position, fetchError) {
     case "hide":
       break;
   }
-
+}
+function renderLoadingAnimation(option){
+  const loadingDiv = document.querySelector(`.loading-basic`)
+  document.querySelector("#summonerBasicInfoSection").innerHTML = ""
+  switch(option) {
+    case "show":
+      loadingDiv.style.display = "flex";
+      break;
+    case "hide":
+      loadingDiv.style.display = "none";
+  }
 }
 async function data() {
     try {
+      renderLoadingAnimation("show")
       const basicSummonerInfo = await fetchBasicSummonerInfo();
+      renderLoadingAnimation("hide")
       renderBasicInfo(basicSummonerInfo);
       try {
         const summonerRankInfo = await fetchSummonerRankInfo(basicSummonerInfo.id);
-        console.log("summoner rank info outside detectRankInfo:", summonerRankInfo)
         detectRankInfo(summonerRankInfo);
       }
       catch (error) {console.error(`Error fetching rank info: ${error}`)}
     }
     catch {
+      renderLoadingAnimation("hide")
       renderBasicInfoError();
       renderRankInfoError("soloQ", true);
       renderRankInfoError("flexQ", true);
@@ -335,7 +341,6 @@ async function data() {
       renderItem(summonerInMatchInfo.item5, "last", "show");
     }
     catch (error) {
-      console.error()
       renderMatchInfo("", "", "hide")
       renderItem("","","hide")
     };
@@ -369,10 +374,6 @@ async function fetchSummonerMatchInfo(summonerMatchesID) {
   const URL_summonerMatchInfo = `https://${region}/${byMatch}/${summonerMatchesID}?api_key=${API_KEY}`
   const summonerMatchInfo = await fetch(URL_summonerMatchInfo);
   const summonerMatchInfoJSON = await summonerMatchInfo.json();
-  console.log(summonerMatchInfoJSON)
-  const gameEndStamp = summonerMatchInfoJSON.info.gameEndTimestamp
-  const gameEndDate = new Date(gameEndStamp);
-  console.log("Game End Date:", gameEndDate);
   return summonerMatchInfoJSON;
 }
 
