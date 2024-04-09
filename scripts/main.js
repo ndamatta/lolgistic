@@ -196,7 +196,20 @@ function getSummonerInMatchInfo(summonerMatchInfo, summonerPUUID) {
   }
   return participantInfo;
 }
-function renderMatchInfo(summonerInMatchInfo, fetchError) {
+function styleMatchBackground(summonerInMatchInfo) {
+  const containerElement = document.querySelector("#lastGame .container")
+  switch(summonerInMatchInfo.win) {
+    case true:
+      containerElement.removeAttribute("class")
+      containerElement.setAttribute("class", "container victory");
+      break;
+    case false:
+      containerElement.removeAttribute("class")
+      containerElement.setAttribute("class", "container defeat");
+      break;
+  }
+}
+function renderMatchInfo(summonerMatchInfo, summonerInMatchInfo, fetchError) {
   const lastGameContainer = document.querySelector("#lastGame")
   switch (fetchError) {
     case "show":
@@ -205,6 +218,7 @@ function renderMatchInfo(summonerInMatchInfo, fetchError) {
       <div class="container">
         <div class="column1">
           <p id="gameWin">${renderIfWin(summonerInMatchInfo)}</p>
+          <p>${renderMatchDate(summonerMatchInfo)}</p>
           <p id="gameDuration">${renderMatchDuration(summonerInMatchInfo)} min</p>
           </div>
         <div class="column2">
@@ -231,6 +245,12 @@ function renderMatchInfo(summonerInMatchInfo, fetchError) {
       break;
   }
 
+}
+function renderMatchDate(summonerMatchInfo) {
+  const gameEndTimeStamp = summonerMatchInfo.info.gameEndTimestamp
+  const gameEndDate = new Date(gameEndTimeStamp);
+  const formattedDate = `${gameEndDate.getMonth() + 1}/${gameEndDate.getDate()}/${gameEndDate.getFullYear()}`;
+  return formattedDate;
 }
 function renderIfWin(summonerInMatchInfo) {
   let boolIfWin = summonerInMatchInfo.win
@@ -305,7 +325,8 @@ async function data() {
       const summonerMatchesID = await fetchSummonerMatchesID(basicSummonerInfo.puuid);
       const summonerMatchInfo = await fetchSummonerMatchInfo(summonerMatchesID[0]);
       const summonerInMatchInfo = getSummonerInMatchInfo(summonerMatchInfo, basicSummonerInfo.puuid);
-      renderMatchInfo(summonerInMatchInfo, "show");
+      renderMatchInfo(summonerMatchInfo, summonerInMatchInfo, "show");
+      styleMatchBackground(summonerInMatchInfo);
       renderItem(summonerInMatchInfo.item0, "first", "show");
       renderItem(summonerInMatchInfo.item1, "first", "show");
       renderItem(summonerInMatchInfo.item2, "first", "show");
@@ -313,8 +334,9 @@ async function data() {
       renderItem(summonerInMatchInfo.item4, "last", "show");
       renderItem(summonerInMatchInfo.item5, "last", "show");
     }
-    catch {
-      renderMatchInfo("", "hide")
+    catch (error) {
+      console.error()
+      renderMatchInfo("", "", "hide")
       renderItem("","","hide")
     };
 }
@@ -347,6 +369,10 @@ async function fetchSummonerMatchInfo(summonerMatchesID) {
   const URL_summonerMatchInfo = `https://${region}/${byMatch}/${summonerMatchesID}?api_key=${API_KEY}`
   const summonerMatchInfo = await fetch(URL_summonerMatchInfo);
   const summonerMatchInfoJSON = await summonerMatchInfo.json();
+  console.log(summonerMatchInfoJSON)
+  const gameEndStamp = summonerMatchInfoJSON.info.gameEndTimestamp
+  const gameEndDate = new Date(gameEndStamp);
+  console.log("Game End Date:", gameEndDate);
   return summonerMatchInfoJSON;
 }
 
