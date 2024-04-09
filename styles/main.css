@@ -2,10 +2,18 @@
     max-width: 100%;
     margin: 0 auto;
 }
+.bannerTitle {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0rem;
+}
 .loading-basic {
     display: none;
     justify-content: center;
     margin-top: 2rem;
+}
+#searchBarDiv {
+    padding-top: 1.5rem;
 }
 #summonerBasicInfoSection {
     display: flex;
