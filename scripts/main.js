@@ -31,7 +31,7 @@ function renderBasicInfo(BasicSummonerInfo) {
   let summonerBasicInfoElement = document.querySelector('#summonerBasicInfoSection');
   let html = `
   <figure class="image is-128x128">
-    <img class="is-rounded" src="https://ddragon.leagueoflegends.com/cdn/14.7.1/img/profileicon/${BasicSummonerInfo.profileIconId}.png" alt=""/>
+    <img class="is-rounded" src="https://ddragon.leagueoflegends.com/cdn/14.7.1/img/profileicon/${BasicSummonerInfo.profileIconId}.png" alt="Summoner Profile Icon"/>
   </figure>
   <h1 class="is-size-3">${BasicSummonerInfo.name}</h1>
   <h2 class="subtitle">Level ${BasicSummonerInfo.summonerLevel}</h2>`
@@ -42,7 +42,7 @@ function renderBasicInfoError() {
   let summonerBasicInfoElement = document.querySelector('#summonerBasicInfoSection');
   let html = `
   <figure class="image is-128x128">
-    <img class="is-rounded" src="https://ddragon.leagueoflegends.com/cdn/14.7.1/img/profileicon/29.png" alt=""/>
+    <img class="is-rounded" src="https://ddragon.leagueoflegends.com/cdn/14.7.1/img/profileicon/29.png" alt="Unknown Summoner Profile Icon"/>
   </figure>
   <p class="is-size-5">We couldn't find this summoner<p>
   <p class="is-size-6">Try with another one</p>`
