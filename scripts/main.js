@@ -1,16 +1,7 @@
-// BURGER BUTTON
-const burgerIcon = document.querySelector("#burger");
-const navbarMenu = document.querySelector("#navLinks");
-
-burgerIcon.addEventListener("click", () => {
-  navbarMenu.classList.toggle("is-active");
-});
-// FOCUS SEARCH BAR
-document.querySelector("#searchBarSection input").focus();
-
-// API KEY
+// ---------- API KEY ----------
 const API_KEY = "RGAPI-5d0693ec-5502-4005-896f-b183d618115d";
 
+// ---------- GETTERS MAIN ----------
 function getSummonerName() {
   return document.querySelector("#searchBar").value;
 }
@@ -33,6 +24,20 @@ function getRegion(option) {
         })
   }
 }
+
+// ---------- RENDERS WITH RELATED ERRORS AND GETTERS ----------
+//BASIC INFO / ERROR
+function renderBasicInfo(BasicSummonerInfo) {
+  let summonerBasicInfoElement = document.querySelector('#summonerBasicInfoSection');
+  let html = `
+  <figure class="image is-128x128">
+    <img class="is-rounded" src="https://ddragon.leagueoflegends.com/cdn/14.7.1/img/profileicon/${BasicSummonerInfo.profileIconId}.png" alt=""/>
+  </figure>
+  <h1 class="is-size-3">${BasicSummonerInfo.name}</h1>
+  <h2 class="subtitle">Level ${BasicSummonerInfo.summonerLevel}</h2>`
+  summonerBasicInfoElement.innerHTML = html;
+  summonerBasicInfoElement.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 function renderBasicInfoError() {
   let summonerBasicInfoElement = document.querySelector('#summonerBasicInfoSection');
   let html = `
@@ -45,40 +50,7 @@ function renderBasicInfoError() {
   summonerBasicInfoElement.scrollIntoView({ behavior: "smooth", block: "start" })
 }
 
-function renderBasicInfo(data) {
-  let summonerBasicInfoElement = document.querySelector('#summonerBasicInfoSection');
-  let html = `
-  <figure class="image is-128x128">
-    <img class="is-rounded" src="https://ddragon.leagueoflegends.com/cdn/14.7.1/img/profileicon/${data.profileIconId}.png" alt=""/>
-  </figure>
-  <h1 class="is-size-3">${data.name}</h1>
-  <h2 class="subtitle">Level ${data.summonerLevel}</h2>`
-  summonerBasicInfoElement.innerHTML = html;
-  summonerBasicInfoElement.scrollIntoView({ behavior: "smooth", block: "start" });
-}
-function renderRankInfoError(queue, toHide) {
-  const boxElement = document.querySelector(`#${queue}`)
-  switch (toHide) {
-    case true:
-      const soloQBox = document.querySelector("#soloQ");
-      const flexQBox = document.querySelector("#flexQ");
-      soloQBox.innerHTML = "";
-      flexQBox.innerHTML = "";
-      soloQBox.removeAttribute("class");
-      flexQBox.removeAttribute("class");
-      break;
-    case false:
-      boxElement.setAttribute("class", "box");
-      let html = `
-      <figure class="image is-64x64">
-        <img class="is-rounded" src="${getTierIcon("", "unranked")}" alt="Emblem tier icon" />
-      </figure>
-      <p id="soloQ_rank">No rank info available</p>`
-      boxElement.innerHTML = html;
-      break;
-  }
-
-}
+// RANK INFO / ERROR / RELATED GETTERS
 function detectRankInfo(summonerRankInfo) {
   if (summonerRankInfo.length == 0) {
     renderRankInfoError("soloQ", false)
@@ -101,7 +73,6 @@ function detectRankInfo(summonerRankInfo) {
     renderRankFlexQInfo(summonerRankInfo)
   }
 }
-
 function renderRankSoloQInfo(summonerRankInfo) {
   const soloQboxElement = document.querySelector("#soloQ");
   soloQboxElement.setAttribute("class", "box");
@@ -110,12 +81,12 @@ function renderRankSoloQInfo(summonerRankInfo) {
     <figure class="image is-64x64">
       <img class="is-rounded" src="${getTierIcon(summonerRankInfo, "soloQ")}" alt="Emblem tier icon" />
     </figure>
-    <p id="soloQ_rank">${getSoloQTierRank(summonerRankInfo)}</p>
-    <p id="soloQ_winrate">${getWinrate(summonerRankInfo, "soloQ")}</p>
-    <p id="soloQ_winratep">${getWinrateP(summonerRankInfo, "soloQ")}</p>`
+    <p>${getTierRank(summonerRankInfo, "soloQ")}</p>
+    <p>${getLP(summonerRankInfo, "soloQ")} LP</p>
+    <p>${getWinrate(summonerRankInfo, "soloQ")}</p>
+    <p>${getWinrateP(summonerRankInfo, "soloQ")}</p>`
   soloQboxElement.innerHTML = html;
 }
-
 function renderRankFlexQInfo(summonerRankInfo) {
   const flexQboxElement = document.querySelector("#flexQ");
   flexQboxElement.setAttribute("class", "box");
@@ -124,68 +95,121 @@ function renderRankFlexQInfo(summonerRankInfo) {
     <figure class="image is-64x64">
     <img class="is-rounded" src="${getTierIcon(summonerRankInfo, "flexQ")}" alt="Emblem tier icon" />
     </figure>
-    <p id="flexQ_rank">${getFlexTierRank(summonerRankInfo, "flexQ")}</p>
-    <p id="flexQ_winrate">${getWinrate(summonerRankInfo, "flexQ")}</p>
-    <p id="flexQ_winratep">${getWinrateP(summonerRankInfo, "flexQ")}</p>`
+    <p>${getTierRank(summonerRankInfo, "flexQ")}</p>
+    <p>${getLP(summonerRankInfo, "flexQ")} LP</p>
+    <p>${getWinrate(summonerRankInfo, "flexQ")}</p>
+    <p>${getWinrateP(summonerRankInfo, "flexQ")}</p>`
   flexQboxElement.innerHTML = html;
 }
-
-function getTierIcon(data, queue) {
+function renderRankInfoError(queue, toHide) {
+  const boxElement = document.querySelector(`#${queue}`)
+  switch (toHide) {
+    case true:
+      const soloQBox = document.querySelector("#soloQ");
+      const flexQBox = document.querySelector("#flexQ");
+      soloQBox.innerHTML = "";
+      flexQBox.innerHTML = "";
+      soloQBox.removeAttribute("class");
+      flexQBox.removeAttribute("class");
+      break;
+    case false:
+      boxElement.setAttribute("class", "box");
+      let html = `
+      <figure class="image is-64x64">
+        <img class="is-rounded" src="${getTierIcon("", "unranked")}" alt="Emblem tier icon" />
+      </figure>
+      <p id="soloQ_rank">No rank info available</p>`
+      boxElement.innerHTML = html;
+      break;
+  }
+}
+function getTierIcon(summonerRankInfo, queue) {
   switch (queue) {
     case "soloQ":
-      const path0 = `./images/tier${data[0].tier.toUpperCase()}.webp`
+      const path0 = `./images/tier${summonerRankInfo[0].tier.toUpperCase()}.webp`
       return path0;
     case "flexQ":
-      const path1 = `./images/tier${data[1].tier.toUpperCase()}.webp`
+      const path1 = `./images/tier${summonerRankInfo[1].tier.toUpperCase()}.webp`
       return path1;
     case "unranked":
       return `./images/tierIRON.webp`
   }
 }
-function getWinrate(data, queue) {
+function getTierRank(summonerRankInfo, queue) {
+  switch(queue) {
+    case "soloQ":
+      return `${summonerRankInfo[0].tier} ${summonerRankInfo[0].rank}`
+    case "flexQ":
+      return `${summonerRankInfo[1].tier} ${summonerRankInfo[1].rank}`
+  }
+}
+function getLP(summonerRankInfo, queue) {
   switch (queue) {
     case "soloQ":
-      return `${data[0].wins}W | ${data[0].losses}L`
+      return `${summonerRankInfo[0].leaguePoints}`
     case "flexQ":
-      return `${data[1].wins}W | ${data[1].losses}L`
+      return `${summonerRankInfo[1].leaguePoints}`
   }
 }
-function getWinrateP(data, queue) {
-  try {
-    switch (queue) {
-      case "soloQ":
-        let total_games0 = data[0].wins + data[0].losses
-        let winrate0 = (data[0].wins / total_games0) * 100
-        return `WR ${winrate0.toFixed(2)}`
+function getWinrate(summonerRankInfo, queue) {
+  switch (queue) {
+    case "soloQ":
+      return `${summonerRankInfo[0].wins}W | ${summonerRankInfo[0].losses}L`
+    case "flexQ":
+      return `${summonerRankInfo[1].wins}W | ${summonerRankInfo[1].losses}L`
+  }
+}
+function getWinrateP(summonerRankInfo, queue) {
+  switch (queue) {
+    case "soloQ":
+      let total_games0 = summonerRankInfo[0].wins + summonerRankInfo[0].losses
+      let winrate0 = (summonerRankInfo[0].wins / total_games0) * 100
+      return `WR ${winrate0.toFixed(2)}%`
 
-      case "flexQ":
-        let total_games1 = data[1].wins + data[1].losses
-        let winrate1 = (data[1].wins / total_games1) * 100
-        return `WR ${winrate1.toFixed(2)}`
-    }
+    case "flexQ":
+      let total_games1 = summonerRankInfo[1].wins + summonerRankInfo[1].losses
+      let winrate1 = (summonerRankInfo[1].wins / total_games1) * 100
+      return `WR ${winrate1.toFixed(2)}%`
   }
-  catch { return "" }
 }
-function getSoloQTierRank(data) {
-  try {
-    return `${data[0].tier} ${data[0].rank}`
+
+
+// MATCH INFO / DYNAMIC STYLING /GETTERS
+function renderMatchInfo(summonerMatchInfo, summonerInMatchInfo, toDisplay) {
+  const lastMatchContainer = document.querySelector("#lastMatchInfo")
+  switch (toDisplay) {
+    case true:
+      let html = `
+      <p id="lastMatchTitle">LAST MATCH</p>
+      <div class="container">
+        <div class="column1">
+          <p id="gameWin">${getIfWin(summonerInMatchInfo)}</p>
+          <p class="is-size-7" id="gameDate">${getMatchDate(summonerMatchInfo)}</p>
+          <p class="is-size-7" id="gameDuration">${getMatchDuration(summonerInMatchInfo)}m</p>
+          </div>
+        <div class="column2">
+          <figure id="gameChampionImage">
+            <img class="image is-64x64" src="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${summonerInMatchInfo.championName}_0.jpg"/>
+          </figure>
+        </div>
+        <div class="column3">
+          <p id="gameKDA">${getKDA(summonerInMatchInfo)}</p>
+          <p id="gameLevel">Lvl: ${getLevel(summonerInMatchInfo)}</p>
+        </div>
+        <div class="column4">
+          <div class="first3items">
+          </div>
+          <div class="last3items">
+          </div>
+        </div>
+      </div>
+      `
+      lastMatchContainer.innerHTML = html;
+      break;
+    case false:
+      lastMatchContainer.innerHTML = "";
+      break;
   }
-  catch { return "No ranked info available" }
-}
-function getFlexTierRank(data) {
-  try {
-    return `${data[1].tier} ${data[1].rank}`
-  }
-  catch { return "No ranked info available" }
-}
-function getSummonerInMatchInfo(summonerMatchInfo, summonerPUUID) {
-  let participantInfo = []
-  for (index in summonerMatchInfo.info.participants) {
-    if (summonerMatchInfo.info.participants[index].puuid == summonerPUUID) {
-      participantInfo = summonerMatchInfo.info.participants[index]
-    }
-  }
-  return participantInfo;
 }
 function styleMatchBackground(summonerInMatchInfo) {
   const containerElement = document.querySelector("#lastMatchInfo .container")
@@ -200,50 +224,21 @@ function styleMatchBackground(summonerInMatchInfo) {
       break;
   }
 }
-function renderMatchInfo(summonerMatchInfo, summonerInMatchInfo, fetchError) {
-  const lastMatchContainer = document.querySelector("#lastMatchInfo")
-  switch (fetchError) {
-    case "show":
-      let html = `
-      <p id="lastMatchTitle">LAST MATCH</p>
-      <div class="container">
-        <div class="column1">
-          <p id="gameWin">${renderIfWin(summonerInMatchInfo)}</p>
-          <p class="is-size-7" id="gameDate">${renderMatchDate(summonerMatchInfo)}</p>
-          <p class="is-size-7" id="gameDuration">${renderMatchDuration(summonerInMatchInfo)}m</p>
-          </div>
-        <div class="column2">
-          <figure id="gameChampionImage">
-            <img class="image is-64x64" src="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${summonerInMatchInfo.championName}_0.jpg"/>
-          </figure>
-        </div>
-        <div class="column3">
-          <p id="gameKDA">${renderKDA(summonerInMatchInfo)}</p>
-          <p id="gameLevel">${renderLevel(summonerInMatchInfo)}</p>
-        </div>
-        <div class="column4">
-          <div class="first3items">
-          </div>
-          <div class="last3items">
-          </div>
-        </div>
-      </div>
-      `
-      lastMatchContainer.innerHTML = html;
-      break;
-    case "hide":
-      lastMatchContainer.innerHTML = "";
-      break;
+function getSummonerInMatchInfo(summonerMatchInfo, summonerPUUID) {
+  let summonerInfo = []
+  for (index in summonerMatchInfo.info.participants) {
+    if (summonerMatchInfo.info.participants[index].puuid == summonerPUUID) {
+      summonerInfo = summonerMatchInfo.info.participants[index]
+    }
   }
-
+  return summonerInfo;
 }
-function renderMatchDate(summonerMatchInfo) {
-  const matchEndTimeStamp = summonerMatchInfo.info.gameEndTimestamp
-  const matchEndDate = new Date(matchEndTimeStamp);
+function getMatchDate(summonerMatchInfo) {
+  const matchEndDate = new Date(summonerMatchInfo.info.gameEndTimestamp);
   const formattedDate = `${matchEndDate.getMonth() + 1}/${matchEndDate.getDate()}/${matchEndDate.getFullYear()}`;
   return formattedDate;
 }
-function renderIfWin(summonerInMatchInfo) {
+function getIfWin(summonerInMatchInfo) {
   let boolIfWin = summonerInMatchInfo.win
   switch (boolIfWin) {
     case true:
@@ -252,23 +247,24 @@ function renderIfWin(summonerInMatchInfo) {
       return "Defeat"
   }
 }
-function renderMatchDuration(summonerInMatchInfo) {
+function getMatchDuration(summonerInMatchInfo) {
   let matchDuration = summonerInMatchInfo.timePlayed
   let inMinutes = matchDuration / 60
   return inMinutes.toFixed(2)
 }
-function renderKDA(summonerInMatchInfo) {
+function getKDA(summonerInMatchInfo) {
   let kda = `${summonerInMatchInfo.kills}/${summonerInMatchInfo.deaths}/${summonerInMatchInfo.assists}`
   return kda
 }
-function renderLevel(summonerInMatchInfo) {
-  return `Lvl: ${summonerInMatchInfo.champLevel}`
+function getLevel(summonerInMatchInfo) {
+  return summonerInMatchInfo.champLevel
 }
-function renderItem(summonerItemID, position, fetchError) {
+// ----------ITEMS----------
+function renderItem(summonerItemID, position, toDisplay) {
   const first3ItemsElement = document.querySelector(".first3items")
   const last3ItemsElement = document.querySelector(".last3items")
-  switch (fetchError) {
-    case "show":
+  switch (toDisplay) {
+    case true:
       const figureElement = document.createElement("figure");
       figureElement.setAttribute("class", "image is-32x32");
       const imgElement = document.createElement("img");
@@ -289,26 +285,16 @@ function renderItem(summonerItemID, position, fetchError) {
           break;
       }
       break;
-    case "hide":
+    case false:
       break;
   }
 }
-function renderLoadingAnimation(option) {
-  const loadingDiv = document.querySelector(`.loading-basic`)
-  document.querySelector("#summonerBasicInfoSection").innerHTML = ""
-  switch (option) {
-    case "show":
-      loadingDiv.style.display = "flex";
-      break;
-    case "hide":
-      loadingDiv.style.display = "none";
-  }
-}
+
 async function searchSummoner() {
   try {
-    renderLoadingAnimation("show");
+    renderLoadingAnimation(true);
     const basicSummonerInfo = await fetchBasicSummonerInfo();
-    renderLoadingAnimation("hide");
+    renderLoadingAnimation(false);
     renderBasicInfo(basicSummonerInfo);
     animateElement("#summonerBasicInfoSection");
     try {
@@ -319,7 +305,8 @@ async function searchSummoner() {
     }
     catch (error) { console.error(`Error fetching rank info: ${error}`) }
   }
-  catch {
+  catch (error) {
+    console.error(error)
     renderLoadingAnimation("hide")
     renderBasicInfoError();
     animateElement("#summonerBasicInfoSection");
@@ -332,22 +319,22 @@ async function searchSummoner() {
     const summonerMatchesID = await fetchSummonerMatchesID(basicSummonerInfo.puuid);
     const summonerMatchInfo = await fetchSummonerMatchInfo(summonerMatchesID[0]);
     const summonerInMatchInfo = getSummonerInMatchInfo(summonerMatchInfo, basicSummonerInfo.puuid);
-    renderMatchInfo(summonerMatchInfo, summonerInMatchInfo, "show");
+    renderMatchInfo(summonerMatchInfo, summonerInMatchInfo, true);
     styleMatchBackground(summonerInMatchInfo);
     animateElement("#lastMatchInfo");
-    renderItem(summonerInMatchInfo.item0, "first", "show");
-    renderItem(summonerInMatchInfo.item1, "first", "show");
-    renderItem(summonerInMatchInfo.item2, "first", "show");
-    renderItem(summonerInMatchInfo.item3, "last", "show");
-    renderItem(summonerInMatchInfo.item4, "last", "show");
-    renderItem(summonerInMatchInfo.item5, "last", "show");
+    renderItem(summonerInMatchInfo.item0, "first", true);
+    renderItem(summonerInMatchInfo.item1, "first", true);
+    renderItem(summonerInMatchInfo.item2, "first", true);
+    renderItem(summonerInMatchInfo.item3, "last", true);
+    renderItem(summonerInMatchInfo.item4, "last", true);
+    renderItem(summonerInMatchInfo.item5, "last", true);
   }
   catch (error) {
-    renderMatchInfo("", "", "hide")
+    renderMatchInfo("", "", false)
     renderItem("", "", "hide")
   };
 }
-
+// ---------- ASYNC FETCH ----------
 async function fetchBasicSummonerInfo() {
   const bySummonerName = "lol/summoner/v4/summoners/by-name";
   const URL_basicInfo = `https://${getRegion("basic")}/${bySummonerName}/${getSummonerName()}?api_key=${API_KEY}`;
@@ -378,10 +365,20 @@ async function fetchSummonerMatchInfo(summonerMatchesID) {
   const summonerMatchInfoJSON = await summonerMatchInfo.json();
   return summonerMatchInfoJSON;
 }
+// ----------OTHERS----------
+// BURGER BUTTON
+const burgerIcon = document.querySelector("#burger");
+const navbarMenu = document.querySelector("#navLinks");
 
-// Choose region
+burgerIcon.addEventListener("click", () => {
+  navbarMenu.classList.toggle("is-active");
+});
+
+// FOCUS SEARCH BAR
+document.querySelector("#searchBarSection input").focus();
+
+// CHOOSE REGION DROPLIST
 const selectElement = document.querySelector("#searchBarSection select");
-
 fetch('./json/regions.json')
   .then(response => response.json())
   .then(data => {
@@ -395,7 +392,9 @@ fetch('./json/regions.json')
       option.value = data[server].url;
       selectElement.appendChild(option);
     }
-  })
+})
+
+// BUTTONS AND ENTER KEY EVENT LISTENERS
 document.querySelector("#searchBarBtn").addEventListener("click", searchSummoner);
 document.querySelector("#searchBarSection input").addEventListener("keypress", function (event) {
   if (event.key === "Enter") {
@@ -414,13 +413,26 @@ document.querySelector("#searchBarBtn").addEventListener("click", function () {
   localStorage.setItem('lastSearch', searchBarInput.value);
 });
 
+// LOADING ANIMATION
+function renderLoadingAnimation(toDisplay) {
+  const loadingDiv = document.querySelector(`.loading-basic`)
+  document.querySelector("#summonerBasicInfoSection").innerHTML = ""
+  switch (toDisplay) {
+    case true:
+      loadingDiv.style.display = "flex";
+      break;
+    case false:
+      loadingDiv.style.display = "none";
+  }
+}
+
 //ANIMATE.CSS
 function animateElement(elementSelector) {
   const element = document.querySelector(`${elementSelector}`);
-  element.classList.add('animate__animated', "animate__slow", 'animate__fadeIn');
+  element.classList.add('animate__animated', 'animate__fadeIn');
 
   element.addEventListener('animationend', () => {
-    element.classList.remove('animate__animated', "animate__slow", 'animate__fadeIn');
+    element.classList.remove('animate__animated', 'animate__fadeIn');
   });
 }
 
