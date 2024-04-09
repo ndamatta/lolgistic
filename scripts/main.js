@@ -109,7 +109,7 @@ function renderRankSoloQInfo (summonerRankInfo) {
     const soloQboxElement = document.querySelector("#soloQ");
     soloQboxElement.setAttribute("class", "box");
     let html = `
-    <p>solo Q<p>
+    <p id="soloQTitle">SOLO Q<p>
     <figure class="image is-64x64">
       <img class="is-rounded" src="${getTierIcon(summonerRankInfo, "soloQ")}" alt="Emblem tier icon" />
     </figure>
@@ -123,7 +123,7 @@ function renderRankFlexQInfo (summonerRankInfo) {
     const flexQboxElement = document.querySelector("#flexQ");
     flexQboxElement.setAttribute("class", "box");
     let html = `
-    <p>flex Q<p>
+    <p id="flexQTitle">FLEX Q<p>
     <figure class="image is-64x64">
     <img class="is-rounded" src="${getTierIcon(summonerRankInfo, "flexQ")}" alt="Emblem tier icon" />
     </figure>
@@ -191,7 +191,7 @@ function getSummonerInMatchInfo(summonerMatchInfo, summonerPUUID) {
   return participantInfo;
 }
 function styleMatchBackground(summonerInMatchInfo) {
-  const containerElement = document.querySelector("#lastGame .container")
+  const containerElement = document.querySelector("#lastMatchInfo .container")
   switch(summonerInMatchInfo.win) {
     case true:
       containerElement.removeAttribute("class")
@@ -204,11 +204,11 @@ function styleMatchBackground(summonerInMatchInfo) {
   }
 }
 function renderMatchInfo(summonerMatchInfo, summonerInMatchInfo, fetchError) {
-  const lastGameContainer = document.querySelector("#lastGame")
+  const lastMatchContainer = document.querySelector("#lastMatchInfo")
   switch (fetchError) {
     case "show":
       let html = `
-      <p>last match</p>
+      <p id="lastMatchTitle">LAST MATCH</p>
       <div class="container">
         <div class="column1">
           <p id="gameWin">${renderIfWin(summonerInMatchInfo)}</p>
@@ -232,18 +232,18 @@ function renderMatchInfo(summonerMatchInfo, summonerInMatchInfo, fetchError) {
         </div>
       </div>
       `
-      lastGameContainer.innerHTML = html;
+      lastMatchContainer.innerHTML = html;
       break;
     case "hide":
-      lastGameContainer.innerHTML = "";
+      lastMatchContainer.innerHTML = "";
       break;
   }
 
 }
 function renderMatchDate(summonerMatchInfo) {
-  const gameEndTimeStamp = summonerMatchInfo.info.gameEndTimestamp
-  const gameEndDate = new Date(gameEndTimeStamp);
-  const formattedDate = `${gameEndDate.getMonth() + 1}/${gameEndDate.getDate()}/${gameEndDate.getFullYear()}`;
+  const matchEndTimeStamp = summonerMatchInfo.info.gameEndTimestamp
+  const matchEndDate = new Date(matchEndTimeStamp);
+  const formattedDate = `${matchEndDate.getMonth() + 1}/${matchEndDate.getDate()}/${matchEndDate.getFullYear()}`;
   return formattedDate;
 }
 function renderIfWin(summonerInMatchInfo) {
