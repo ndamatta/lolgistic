@@ -306,19 +306,23 @@ function renderLoadingAnimation(option){
 }
 async function searchSummoner() {
     try {
-      renderLoadingAnimation("show")
+      renderLoadingAnimation("show");
       const basicSummonerInfo = await fetchBasicSummonerInfo();
-      renderLoadingAnimation("hide")
+      renderLoadingAnimation("hide");
       renderBasicInfo(basicSummonerInfo);
+      animateElement("#summonerBasicInfoSection");
       try {
         const summonerRankInfo = await fetchSummonerRankInfo(basicSummonerInfo.id);
         detectRankInfo(summonerRankInfo);
+        animateElement("#soloQ");
+        animateElement("#flexQ");
       }
       catch (error) {console.error(`Error fetching rank info: ${error}`)}
     }
     catch {
       renderLoadingAnimation("hide")
       renderBasicInfoError();
+      animateElement("#summonerBasicInfoSection");
       renderRankInfoError("soloQ", true);
       renderRankInfoError("flexQ", true);
     };
@@ -330,6 +334,7 @@ async function searchSummoner() {
       const summonerInMatchInfo = getSummonerInMatchInfo(summonerMatchInfo, basicSummonerInfo.puuid);
       renderMatchInfo(summonerMatchInfo, summonerInMatchInfo, "show");
       styleMatchBackground(summonerInMatchInfo);
+      animateElement("#lastMatchInfo");
       renderItem(summonerInMatchInfo.item0, "first", "show");
       renderItem(summonerInMatchInfo.item1, "first", "show");
       renderItem(summonerInMatchInfo.item2, "first", "show");
@@ -408,3 +413,14 @@ if (savedLastSearch) {
 document.querySelector("#searchBarBtn").addEventListener("click", function() {
   localStorage.setItem('lastSearch', searchBarInput.value);
 });
+
+//ANIMATE.CSS
+function animateElement(elementSelector){
+  const element = document.querySelector(`${elementSelector}`);
+  element.classList.add('animate__animated',"animate__slow", 'animate__fadeIn');
+
+  element.addEventListener('animationend', () => {
+  element.classList.remove('animate__animated', "animate__slow", 'animate__fadeIn');
+});
+}
+
