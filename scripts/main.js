@@ -28,12 +28,13 @@ function getRegion(option) {
 // ---------- RENDERS WITH RELATED ERRORS AND GETTERS ----------
 //BASIC INFO / ERROR
 function renderBasicInfo(BasicSummonerInfo) {
+  console.log(BasicSummonerInfo);
   let summonerBasicInfoElement = document.querySelector('#summonerBasicInfoSection');
   let html = `
   <figure class="image is-128x128">
     <img class="is-rounded" src="https://ddragon.leagueoflegends.com/cdn/14.7.1/img/profileicon/${BasicSummonerInfo.profileIconId}.png" alt="Summoner Profile Icon"/>
   </figure>
-  <h1 class="is-size-3">${BasicSummonerInfo.name}</h1>
+  <h1 class="is-size-3">${getSummonerName()}</h1>
   <h2 class="subtitle">Level ${BasicSummonerInfo.summonerLevel}</h2>`
   summonerBasicInfoElement.innerHTML = html;
   summonerBasicInfoElement.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -52,6 +53,7 @@ function renderBasicInfoError() {
 
 // RANK INFO / ERROR / RELATED GETTERS
 function detectRankInfo(summonerRankInfo) {
+  console.log(summonerRankInfo)
   if (summonerRankInfo.length == 0) {
     renderRankInfoError("soloQ", false)
     renderRankInfoError("flexQ", false)
