@@ -1,5 +1,5 @@
 // ---------- API KEY ----------
-const API_KEY = "RGAPI-7ab8f76d-a118-450f-a0f4-4d5a0bae075b";
+const API_KEY = "RGAPI-b99aa000-029e-4cdf-a02a-2ecffebbc961";
 
 // ---------- GETTERS MAIN ----------
 function getSummonerName() {
