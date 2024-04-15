@@ -12,4 +12,8 @@ Do you want to analyze your LoL statistics quickly and easily? LoLgistic is your
 🤝 Uses official Riot API<br>
 🛡️ No login required<br>
 ✅ Easy to understand and straightforward<br>
+___
+🛈 Any correction or suggestion is welcome. You can create a pull request, and I will personally review and merge it.<br>
+🛈 LoLgistic is under a Non-Commercial NoDerivatives <a href="https://github.com/ndamatta/lolgistic/blob/main/LICENSE">License</a>.<br>
+ ©2024 | ndamatta
 
