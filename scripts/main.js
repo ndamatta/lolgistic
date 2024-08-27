@@ -2,8 +2,15 @@
 const API_KEY = "RGAPI-d858c036-8844-4ddc-8fc4-91bf5ea476f5";
 
 // ---------- GETTERS MAIN ----------
-function getSummonerName() {
-  return document.querySelector("#searchBar").value;
+function getGameName() {
+  const searchBarValue = document.querySelector("#searchBar").value;
+  const gameName = searchBarValue.split('#')[0];
+  return gameName;
+}
+function getTagline() {
+  const searchBarValue = document.querySelector("#searchBar").value;
+  const tagLine = searchBarValue.split('#')[1];
+  return tagLine || ''; 
 }
 function getRegion(option) {
   // Will use same function for both, to get rank info and matches info. For matches it groups the options
@@ -34,7 +41,7 @@ function renderBasicInfo(BasicSummonerInfo) {
   <figure class="image is-128x128">
     <img class="is-rounded" src="https://ddragon.leagueoflegends.com/cdn/14.7.1/img/profileicon/${BasicSummonerInfo.profileIconId}.png" alt="Summoner Profile Icon"/>
   </figure>
-  <h1 class="is-size-3">${getSummonerName()}</h1>
+  <h1 class="is-size-3">${getGameName()}</h1>
   <h2 class="subtitle">Level ${BasicSummonerInfo.summonerLevel}</h2>`
   summonerBasicInfoElement.innerHTML = html;
   summonerBasicInfoElement.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -338,8 +345,10 @@ async function searchSummoner() {
 }
 // ---------- ASYNC FETCH ----------
 async function fetchBasicSummonerInfo() {
-  const bySummonerName = "lol/summoner/v4/summoners/by-name";
-  const URL_basicInfo = `https://${getRegion("basic")}/${bySummonerName}/${getSummonerName()}?api_key=${API_KEY}`;
+  const byRiotId = "riot/account/v1/accounts/by-riot-id";
+  /* const URL_basicInfo = `https://${getRegion("basic")}/${bySummonerName}/${getSummonerName()}?api_key=${API_KEY}`; */
+  const region = await getRegion("match");
+  const URL_basicInfo = `https://${region}/${byRiotId}/${getGameName()}/${getTagline()}?api_key=${API_KEY}`;
   const BasicSummonerInfo = await fetch(URL_basicInfo);
   const basicInfoBasicSummonerInfoJSON = await BasicSummonerInfo.json();
   return basicInfoBasicSummonerInfoJSON;
